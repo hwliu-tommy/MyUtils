@@ -23,4 +23,39 @@ def get_bin(fname, uri, dry_run=False, **kwargs):
                                         f.write(chunk)
         return fname
 
-	return fname
+
+# Class
+class NetworkClient:
+        def __init__(self, **ikwargs) -> None:
+                self.env_kwargs = ikwargs
+
+        # Static
+        def get_html(self, uri, **ikwargs) -> str:
+                kwargs = {**self.env_kwargs, **ikwargs}
+                return get_html(uri, kwargs)
+
+        def get_bin(self, fname, uri, dry_run=False, **ikwargs):
+                kwargs = {**self.env_kwargs, **ikwargs}
+                return get_bin(fname, uri, dry_run, kwargs)
+
+        def setenv(self, **ikwargs):
+                self.env_kwargs = {**self.env_kwargs, **ikwargs}
+
+        def unsetenv(self, *iargs):
+                for key in iargs:
+                        try:
+                                del self.env_kwargs[key]
+                        except NameError:
+                                pass
+
+        def getenv(self, name):
+                try:
+                        return self.env_kwargs[name]
+                except KeyError:
+                        return None
+
+        def getenvs(self, args):
+                if args:
+                        return dict((x, self.getenv(x)) for x in args)
+                else:
+                        return self.env_kwargs
